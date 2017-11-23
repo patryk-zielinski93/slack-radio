@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   slack-radio:
-    container_name: ${CONTAINER_NAME}
+    container_name: ${NODE_CONTAINER_NAME}
     build:
       dockerfile: Dockerfile-dev
       context: ./
@@ -17,3 +17,25 @@ services:
       - 58586:58586
       - 58585:58585
       - 8888:8888
+    networks:
+      sr_net:
+        ipv4_address: 126.126.1.1
+
+  slack-radio-mongo:
+    env_file:
+      - ./.env
+    container_name: ${MONGO_CONTAINER_NAME}
+    volumes:
+      - ./data/mongodb:/data/db
+    image: mongo:3.5
+    restart: 'no'
+    ports:
+      - 27017:27017
+    networks:
+      sr_net:
+        ipv4_address: 126.126.1.2
+
+networks:
+  sr_net:
+    external:
+      name: SrNet
