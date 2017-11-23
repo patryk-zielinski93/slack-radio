@@ -1,18 +1,21 @@
-import * as http from 'http';
+import { CLIENT_EVENTS, RTM_EVENTS, RtmClient, WebClient } from '@slack/client';
+import { appConfig } from './config';
 
-const app = http.createServer(handler);
+const rtm = new RtmClient(appConfig.token);
+const web = new WebClient(appConfig.token);
 
-if (!module.parent) {
-  app.listen(8888);
-}
+// The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
+rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
+  console.log(`Logged in as ${rtmStartData.self.name} of team ${rtmStartData.team.name}, but not yet connected to a channel`);
+});
 
-export function helloWorld(): string {
-  return 'Hello world!';
-}
+rtm.start();
 
-function handler(req, res) {
-  res.writeHead(200);
-  res.end(helloWorld());
-}
-
-export default helloWorld;
+rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
+  if (message.text === 'Hello.') {
+    web.users.info(message.user, (err, result) => {
+      console.log(result);
+    });
+    rtm.sendMessage('Hello <@' + message.user + '>!', message.channel);
+  }
+});

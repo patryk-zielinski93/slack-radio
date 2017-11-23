@@ -7,7 +7,7 @@
     "inlineSourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "typeRoots": [
       "node_modules/@types"
     ]
