@@ -1,4 +1,3 @@
-import { UpdateWriteOpResult } from 'mongodb';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { map, switchMap } from 'rxjs/operators';
@@ -72,18 +71,27 @@ export abstract class DbModel extends Model {
     );
   }
 
-  save(): Observable<UpdateWriteOpResult> {
+  save<T>(): Observable<T> {
     const collection = this.constructor[modelCollectionKey];
 
     return Database.connect().pipe(
       switchMap(db => {
         if (this._id) {
           this.updatedAt = new Date();
-          return fromPromise(db.collection(collection).updateOne({_id: this._id}, this.serialize()));
+          return fromPromise(db.collection(collection).updateOne({_id: this._id}, this.serialize()))
+            .pipe(
+              map(res => <T>(<any>this))
+            );
         }
 
         this.createdAt = new Date();
-        return fromPromise(db.collection(collection).insertOne(this.serialize()));
+        return fromPromise(db.collection(collection).insertOne(this.serialize()))
+          .pipe(
+            map(res => {
+              this._id = res.insertedId.toHexString();
+              return <T>(<any>this);
+            })
+          );
       })
     );
   }

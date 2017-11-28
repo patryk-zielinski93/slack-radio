@@ -5,7 +5,7 @@ import * as requestPromise from 'request-promise-native';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import * as ytdl from 'youtube-dl';
 import { appConfig } from '../config';
@@ -13,8 +13,7 @@ import { Song } from '../db/models/song.model';
 import { SongMetadata } from '../shared/interfaces/song-metadata.interface';
 
 export class SongService {
-  // Todo
-  private inProgress: { [key: string]: Observable<Song> };
+  private inProgress: { [key: string]: Observable<Song> } = {};
 
   downloadSong(songMetadata: SongMetadata): Observable<SongMetadata> {
     const sub = new Subject<SongMetadata>();
@@ -50,7 +49,11 @@ export class SongService {
   }
 
   getSong(youtubeId: string): Observable<Song> {
-    return Song.findOne<Song>({youtubeId: youtubeId})
+    if (this.inProgress[youtubeId]) {
+      return this.inProgress[youtubeId];
+    }
+
+    const obs = Song.findOne<Song>({youtubeId: youtubeId})
       .pipe(
         switchMap(song => {
           if (song) {
@@ -60,21 +63,25 @@ export class SongService {
           return this.getMetadata(youtubeId).pipe(
             switchMap(songMetadata => this.downloadSong(songMetadata)),
             switchMap(songMetadata => this.normalizeMp3(songMetadata)),
-            map(songMetadata => {
+            switchMap(songMetadata => {
               const s = new Song(
                 parseIsoDuration(songMetadata.contentDetails.duration),
                 songMetadata.id,
                 songMetadata.snippet.title
               );
 
-              // Todo
-              s.save().subscribe();
-
-              return s;
+              return s.save<Song>();
+            }),
+            tap(() => {
+              delete this.inProgress[youtubeId];
             })
           );
         })
       );
+
+    this.inProgress[youtubeId] = obs;
+
+    return obs;
   }
 
   normalizeMp3(songMetadata: SongMetadata): Observable<SongMetadata> {
