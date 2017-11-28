@@ -2,6 +2,7 @@ import { CLIENT_EVENTS, RTM_EVENTS, RtmClient, WebClient } from '@slack/client';
 import 'reflect-metadata';
 import { appConfig } from './config';
 import { SongService } from './services/song.service';
+import { QueueService } from './services/queue.service';
 
 const rtm = new RtmClient(appConfig.slack.token);
 const web = new WebClient(appConfig.slack.token);
@@ -28,4 +29,22 @@ ss.getSong('VfLf7A_-1Vw').subscribe(song => {
   song.save();
 }, (err) => {
   console.log(err);
+});
+
+const qs = new QueueService('testList');
+qs.push('test1');
+qs.push('test2');
+qs.push('test3');
+qs.push('test4');
+qs.pop().subscribe(s => {
+  console.log(s);
+});
+qs.pop().subscribe(s => {
+  console.log(s);
+});
+qs.pop().subscribe(s => {
+  console.log(s);
+});
+qs.pop().subscribe(s => {
+  console.log(s);
 });

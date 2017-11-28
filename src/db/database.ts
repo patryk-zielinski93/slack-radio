@@ -35,7 +35,7 @@ export class Database {
   }
 
   private static getUri(): string {
-    const c = appConfig.db.connection;
+    const c = appConfig.mongo;
     return 'mongodb://' +
       ((c.username || c.password) ? `${c.username}:${c.password}@` : '') +
       `${c.host}:${c.port}` +

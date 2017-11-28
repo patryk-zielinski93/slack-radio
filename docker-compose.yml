@@ -35,6 +35,20 @@ services:
       sr_net:
         ipv4_address: 126.126.1.2
 
+  slack-radio-redis:
+    env_file:
+      - ./.env
+    container_name: ${REDIS_CONTAINER_NAME}
+    volumes:
+      - ./data/redis:/data
+    image: redis:alpine
+    restart: 'no'
+    ports:
+      - 6379:6379
+    networks:
+      sr_net:
+        ipv4_address: 126.126.1.3
+
 networks:
   sr_net:
     external:
