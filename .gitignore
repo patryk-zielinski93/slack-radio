@@ -35,3 +35,4 @@ testem.log
 Thumbs.db
 /src/config.ts
 /public/songs
+/data
