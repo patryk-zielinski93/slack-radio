@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import * as parseIsoDuration from 'parse-iso-duration';
 import * as path from 'path';
 import * as requestPromise from 'request-promise-native';
 import { Observable } from 'rxjs/Observable';
@@ -63,9 +62,11 @@ export class SongService {
           return this.getMetadata(youtubeId).pipe(
             switchMap(songMetadata => this.downloadSong(songMetadata)),
             switchMap(songMetadata => this.normalizeMp3(songMetadata)),
+            switchMap(songMetadata => this.removeSilence(songMetadata)),
+            switchMap(songMetadata => this.setRealMp3Length(songMetadata)),
             switchMap(songMetadata => {
               const s = new Song(
-                parseIsoDuration(songMetadata.contentDetails.duration),
+                parseInt(songMetadata.contentDetails.duration, 10),
                 songMetadata.id,
                 songMetadata.snippet.title
               );
@@ -97,6 +98,45 @@ export class SongService {
 
       sub.complete();
     });
+
+    return sub;
+  }
+
+  removeSilence(songMetadata: SongMetadata): Observable<SongMetadata> {
+    const sub = new Subject<SongMetadata>();
+    const songPath = path.join(appConfig.songs.directory, songMetadata.id + '.mp3');
+
+    exec(`sox ${songPath} ${songPath}.temp.mp3 silence 1 2 0.1% reverse silence 1 2 0.1% reverse && \
+    rm ${songPath} && \
+    mv ${songPath}.temp.mp3 ${songPath}`,
+      (err, stdout, stderr) => {
+        if (err) {
+          sub.error(err);
+        } else {
+          sub.next(songMetadata);
+        }
+
+        sub.complete();
+      });
+
+    return sub;
+  }
+
+  setRealMp3Length(songMetadata: SongMetadata): Observable<SongMetadata> {
+    const sub = new Subject<SongMetadata>();
+    const songPath = path.join(appConfig.songs.directory, songMetadata.id + '.mp3');
+
+    exec(`mp3info -p "%S" ${songPath}`,
+      (err, stdout, stderr) => {
+        if (err) {
+          sub.error(err);
+        } else {
+          songMetadata.contentDetails.duration = stdout;
+          sub.next(songMetadata);
+        }
+
+        sub.complete();
+      });
 
     return sub;
   }

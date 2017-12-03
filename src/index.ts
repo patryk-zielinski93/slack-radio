@@ -24,7 +24,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
 });
 
 const ss = new SongService();
-ss.getSong('VfLf7A_-1Vw').subscribe(song => {
+ss.getSong('6_oPjyy6pMg').subscribe(song => {
   console.log(song);
   song.save();
 }, (err) => {

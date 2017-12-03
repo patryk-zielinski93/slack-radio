@@ -34,5 +34,5 @@ testem.log
 .DS_Store
 Thumbs.db
 /src/config.ts
-/public/songs
+/src/public/songs
 /data
