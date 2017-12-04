@@ -7,8 +7,6 @@ import { ModelProp } from './model.model';
 export class Song extends DbModel {
   @ModelProp()
   duration: number;
-  @ModelProp(Date)
-  lastPlayed: Date;
   @ModelProp()
   title: string;
   @ModelProp()

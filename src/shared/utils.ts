@@ -1,4 +1,12 @@
+import * as querystring from 'querystring';
+import * as url from 'url';
+
 export class Utils {
+  static extractVideoIdFromYoutubeUrl(ytUrl: string): string {
+    const u = url.parse(ytUrl);
+    return <string>querystring.parse(u.query)['v'] || u.pathname.slice(1, 11);
+  }
+
   /**
    * @param {string} string
    * @param {Object} params

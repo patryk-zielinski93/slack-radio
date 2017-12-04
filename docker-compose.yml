@@ -12,11 +12,13 @@ services:
       - ./.env
     volumes:
       - ./:/app
+      - /dev/snd:/dev/snd
     ports:
       - 58587:58587
       - 58586:58586
       - 58585:58585
       - 8888:8888
+    privileged: true
     networks:
       sr_net:
         ipv4_address: 126.126.1.1
