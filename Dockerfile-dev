@@ -1,8 +1,7 @@
 FROM node:carbon
 
 RUN echo "deb http://ftp.fr.debian.org/debian jessie-backports main" >> /etc/apt/sources.list
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y --fix-missing build-essential gcc g++ ca-certificates curl dos2unix ffmpeg sox libsox-fmt-mp3 mp3info alsa-base alsa-utils
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y --fix-missing build-essential gcc g++ ca-certificates curl dos2unix ffmpeg sox libsox-fmt-mp3 mp3info alsa-base alsa-utils libasound2-dev
 
 # Handle permissions issues on unix systems
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
@@ -12,7 +11,7 @@ RUN curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/dow
     && rm /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu
 
-RUN npm install -g 'nodemon@^1.12.1' 'typescript@2.5.0'
+RUN npm install -g 'nodemon@^1.12.1' 'typescript@2.5.0' 'forever'
 RUN mkdir -p /app
 
 COPY ./docker /var/docker
