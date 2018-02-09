@@ -21,7 +21,8 @@ services:
     privileged: true
     networks:
       sr_net:
-        ipv4_address: 126.126.1.1
+        aliases:
+          - web
 
   slack-radio-mongo:
     env_file:
@@ -35,7 +36,8 @@ services:
       - 27017:27017
     networks:
       sr_net:
-        ipv4_address: 126.126.1.2
+        aliases:
+          - mongo
 
   slack-radio-redis:
     env_file:
@@ -49,9 +51,10 @@ services:
       - 6379:6379
     networks:
       sr_net:
-        ipv4_address: 126.126.1.3
+        aliases:
+          - redis
 
 networks:
   sr_net:
     external:
-      name: SrNet
+      name: NginxProxyNetwork
