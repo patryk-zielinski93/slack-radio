@@ -51,7 +51,7 @@ export class SlackController {
     switch (command[0]) {
       case 'y': {
         this.songService
-          .getSong(Utils.extractVideoIdFromYoutubeUrl(command[1]))
+          .getSong(Utils.extractVideoIdFromYoutubeUrl(command[1].substr(1).slice(0, -1)))
           .pipe(
             tap(song => {
               song.save();
