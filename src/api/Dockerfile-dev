@@ -11,11 +11,11 @@ RUN curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/dow
     && rm /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu
 
-RUN npm install -g 'nodemon@^1.12.1' 'typescript@2.5.0' 'forever'
+RUN npm install -g 'nodemon@^1.12.1' 'typescript@2.7.1' 'forever'
 RUN mkdir -p /app
 
-COPY ./docker /var/docker
-COPY .env /var/docker/dev/env.sh
+COPY ./src/api/docker /var/docker
+COPY ./.env /var/docker/dev/env.sh
 RUN find /var/docker -name "*.sh" | xargs dos2unix
 
 # Handle permissions

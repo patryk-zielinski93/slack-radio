@@ -26,4 +26,8 @@ export class Song extends DbModel {
   get filePath(): string {
     return path.join(appConfig.songs.directory, this.youtubeId + '.mp3');
   }
+
+  get filePathForIces(): string {
+    return '/songs/' + this.youtubeId + '.mp3';
+  }
 }

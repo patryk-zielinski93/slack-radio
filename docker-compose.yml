@@ -3,7 +3,7 @@ services:
   slack-radio:
     container_name: ${NODE_CONTAINER_NAME}
     build:
-      dockerfile: Dockerfile-dev
+      dockerfile: src/api/Dockerfile-dev
       context: ./
     environment:
       - VIRTUAL_HOST=radio.local
@@ -13,24 +13,22 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./:/app
-      - /dev/snd:/dev/snd
+      - ./src/api:/app
     ports:
       - 58587:58587
       - 58586:58586
       - 58585:58585
       - 8888:8888
-    privileged: true
     networks:
       sr_net:
         aliases:
-          - web
+          - api
 
   slack-radio-icecast:
       container_name: ${ICECAST_CONTAINER_NAME}
       build:
         dockerfile: Dockerfile-icecast
-        context: ./
+        context: ./src/icecast
       environment:
         - VIRTUAL_HOST=radio-stream.local
         - VIRTUAL_PORT=8000
@@ -45,13 +43,13 @@ services:
   slack-radio-ices:
         container_name: slack-radio-ices
         build:
-          dockerfile: Dockerfile-ices
+          dockerfile: src/ices/Dockerfile-ices
           context: ./
         restart: 'no'
         env_file:
           - ./.env
         volumes:
-          - ./src/public/songs:/songs
+          - ./src/api/src/public/songs:/songs
         depends_on:
           - slack-radio-icecast
         networks:

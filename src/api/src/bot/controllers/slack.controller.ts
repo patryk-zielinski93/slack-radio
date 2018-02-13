@@ -17,7 +17,7 @@ const helpMessage = function (user: string) {
 };
 
 export class SlackController {
-  private queue = new QueueController<QueuedSong>('songQueue');
+  private queue = new QueueController();
   private slack = SlackService.getInstance();
   private songService = SongService.getInstance();
 

@@ -3,14 +3,15 @@ import redis
 
 # This is just a skeleton, something for you to start with.
 r = None
+silence = '/songs/10-sec-of-silence.mp3'
 
 
 # Function called to initialize your python environment.
 # Should return 1 if ok, and 0 if something went wrong.
 def ices_init():
-    global r
+    global r, silence
     r = redis.StrictRedis(host='redis', port=6379, db=0)
-    r.set('next_song', '')
+    r.set('next_song', silence)
     return 1
 
 
@@ -24,10 +25,11 @@ def ices_shutdown():
 # Function called to get the next filename to stream.
 # Should return a string.
 def ices_get_next():
+    global silence
     print 'Executing get_next() function...'
+    next_song = r.get('next_song')
     r.publish('getNext', 'getNext')
-    return r.get('next_song')
-
+    return next_song if next_song else silence
 
 # This function, if defined, returns the string you'd like used
 # as metadata (ie for title streaming) for the current song. You may

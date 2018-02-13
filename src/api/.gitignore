@@ -37,3 +37,5 @@ Thumbs.db
 /src/shared/songs/*
 !/src/shared/songs/10-sec-of-silence.mp3
 /data
+/src/public/songs/*
+!/src/public/songs/10-sec-of-silence.mp3

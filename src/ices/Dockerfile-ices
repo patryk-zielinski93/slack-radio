@@ -9,8 +9,8 @@ RUN apt-get update \
 RUN mkdir /var/log/ices
 RUN mkdir /etc/ices2
 
-COPY docker/ices/ices-0.4.tar.gz /tmp/ices-0.4.tar.gz
-COPY docker/ices /ices
+COPY ./src/ices/docker/ices-0.4.tar.gz /tmp/ices-0.4.tar.gz
+COPY ./src/ices/docker /ices
 
 WORKDIR /tmp
 RUN tar xf ices-0.4.tar.gz
@@ -23,7 +23,7 @@ RUN mkdir /etc/ices
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python get-pip.py
 RUN pip install redis
-COPY docker/ices/ices.py  /usr/local/etc/modules/ices.py
+COPY ./src/ices/docker/ices.py /usr/local/etc/modules/ices.py
 
 WORKDIR /app
 
